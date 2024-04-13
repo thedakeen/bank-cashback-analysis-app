@@ -20,6 +20,7 @@ func (app *application) routes() http.Handler {
 	standardMiddleware := alice.New(c.Handler)
 	dynamicMiddleware := alice.New()
 
+
 	mux := pat.New()
 
 	mux.Post("/api/v1/signup/email", dynamicMiddleware.Append(app.requireNoXAuthJWT).ThenFunc(app.signupEmail))

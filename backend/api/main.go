@@ -4,6 +4,7 @@ import (
 	mongoDB "bank-cashback-analysis/backend/pkg/models/mongodb"
 	"context"
 	"flag"
+	"github.com/robfig/cron"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -13,11 +14,12 @@ import (
 )
 
 type application struct {
-	infoLog     *log.Logger
-	errorLog    *log.Logger
-	users       *mongoDB.UserModel
-	otps        *mongoDB.OtpModel
-	promosHalyk *mongoDB.PromoModel
+	infoLog  *log.Logger
+	errorLog *log.Logger
+	users    *mongoDB.UserModel
+	otps     *mongoDB.OtpModel
+	promos   *mongoDB.PromoModel
+
 }
 
 func main() {
@@ -47,11 +49,11 @@ func main() {
 	db := client.Database("BCAapp")
 
 	app := &application{
-		infoLog:     infoLog,
-		errorLog:    errorLog,
-		otps:        mongoDB.NewOtpModel(db.Collection("otps")),
-		users:       mongoDB.NewUserModel(db.Collection("users")),
-		promosHalyk: mongoDB.NewPromotionModel(db.Collection("promos")),
+		infoLog:  infoLog,
+		errorLog: errorLog,
+		otps:     mongoDB.NewOtpModel(db.Collection("otps")),
+		users:    mongoDB.NewUserModel(db.Collection("users")),
+		promos:   mongoDB.NewPromoModel(db.Collection("promos")),
 	}
 
 	srv := &http.Server{
@@ -63,6 +65,19 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
+	app.promos.DropCollection()
+	app.kaspiParser()
+	go func() {
+		c := cron.New()
+
+		c.AddFunc("0 0 * * *", func() {
+			app.promos.DropCollection()
+			app.kaspiParser()
+		})
+		c.Start()
+
+		select {}
+	}()
 
 	insertHalyk(app.promosHalyk)
 
