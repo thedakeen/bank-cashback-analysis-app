@@ -13,10 +13,11 @@ import (
 )
 
 type application struct {
-	infoLog  *log.Logger
-	errorLog *log.Logger
-	users    *mongoDB.UserModel
-	otps     *mongoDB.OtpModel
+	infoLog     *log.Logger
+	errorLog    *log.Logger
+	users       *mongoDB.UserModel
+	otps        *mongoDB.OtpModel
+	promosHalyk *mongoDB.PromoModel
 }
 
 func main() {
@@ -46,10 +47,11 @@ func main() {
 	db := client.Database("BCAapp")
 
 	app := &application{
-		infoLog:  infoLog,
-		errorLog: errorLog,
-		otps:     mongoDB.NewOtpModel(db.Collection("otps")),
-		users:    mongoDB.NewUserModel(db.Collection("users")),
+		infoLog:     infoLog,
+		errorLog:    errorLog,
+		otps:        mongoDB.NewOtpModel(db.Collection("otps")),
+		users:       mongoDB.NewUserModel(db.Collection("users")),
+		promosHalyk: mongoDB.NewPromotionModel(db.Collection("promos")),
 	}
 
 	srv := &http.Server{
@@ -61,6 +63,8 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
+
+	insertHalyk(app.promosHalyk)
 
 	infoLog.Printf("Starting server on %s", *addr)
 	err = srv.ListenAndServe()

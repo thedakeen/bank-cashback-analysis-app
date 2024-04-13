@@ -12,8 +12,7 @@ import (
 )
 
 type UserModel struct {
-	C               *mongo.Collection
-	ItemsCollection *mongo.Collection
+	C *mongo.Collection
 }
 
 func NewUserModel(usersCollection *mongo.Collection) *UserModel {

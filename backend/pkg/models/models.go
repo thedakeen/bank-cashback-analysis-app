@@ -34,3 +34,35 @@ type OTP struct {
 	Code    string    `bson:"code"`
 	Expires time.Time `bson:"expires"`
 }
+
+////////////////////////
+
+type Promotion struct {
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	Bank         string             `bson:"bank"`
+	CompanyName  string             `bson:"company_name"`
+	CategoryName string             `bson:"category_name"`
+	Bonus        float64            `bson:"bonus_rate"`
+	Type         string             `bson:"type"`
+}
+
+type Category struct {
+	Code  string `json:"code"`
+	Count int64  `json:"count"`
+}
+
+type ShopResponse struct {
+	Shops []Shop `json:"data"`
+}
+
+type Shop struct {
+	CompanyName  string `json:"name"`
+	CategoryName string `json:"category_name"`
+	Tags         []Tag  `json:"tags"`
+}
+
+type Tag struct {
+	Bonus string `json:"text"`
+}
+
+// /////////////////////////
