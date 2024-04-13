@@ -22,12 +22,12 @@ func (m *PromoModel) AddKaspi(title, source_url, bank_name, promo_type, category
 	defer cancel()
 
 	insert := bson.M{
-		"title":      title,
-		"source_url": source_url,
-		"bank_name":  bank_name,
-		"promo_type": promo_type,
-		"bonus_rate": bonus_rate,
-		"category":   category,
+		"title":         title,
+		"source_url":    source_url,
+		"bank_name":     bank_name,
+		"promo_type":    promo_type,
+		"bonus_rate":    bonus_rate,
+		"category_name": category,
 	}
 	_, err := m.C.InsertOne(ctx, insert)
 	if err != nil {
@@ -47,7 +47,7 @@ func (m *PromoModel) DropCollection() error {
 }
 
 func (m *PromoModel) GetAllPromos() ([]*models.Promotion, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	cursor, err := m.C.Find(ctx, bson.M{}, options.Find())
