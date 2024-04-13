@@ -72,8 +72,8 @@ type Tag struct {
 }
 
 type Card struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	Number   string             `bson:"number"`
-	CardType string             `bson:"card_type"`
-	BankName string             `bson:"bank_name"`
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
+	CardNumber string             `bson:"card_number"`
+	CardType   string             `bson:"card_type"`
+	BankName   string             `bson:"bank_name"`
 }

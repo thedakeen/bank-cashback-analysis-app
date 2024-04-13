@@ -19,6 +19,7 @@ type application struct {
 	users    *mongoDB.UserModel
 	otps     *mongoDB.OtpModel
 	promos   *mongoDB.PromoModel
+	cards    *mongoDB.CardModel
 }
 
 func main() {
@@ -53,6 +54,7 @@ func main() {
 		otps:     mongoDB.NewOtpModel(db.Collection("otps")),
 		users:    mongoDB.NewUserModel(db.Collection("users")),
 		promos:   mongoDB.NewPromoModel(db.Collection("promos")),
+		cards:    mongoDB.NewCardModel(db.Collection("cards")),
 	}
 
 	srv := &http.Server{

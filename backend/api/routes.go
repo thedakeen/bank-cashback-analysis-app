@@ -24,6 +24,8 @@ func (app *application) routes() http.Handler {
 
 	mux.Get("/api/v1/cashbacks", dynamicMiddleware.Append(app.authenticate).ThenFunc(app.getAllCashBacks))
 
+	mux.Post("/api/v1/card", dynamicMiddleware.Append(app.authenticate).ThenFunc(app.addCard))
+
 	mux.Post("/api/v1/signup/email", dynamicMiddleware.Append(app.requireNoXAuthJWT).ThenFunc(app.signupEmail))
 	mux.Post("/api/v1/signup/code", dynamicMiddleware.Append(app.requireNoXAuthJWT).ThenFunc(app.signupCode))
 	mux.Post("/api/v1/signup", dynamicMiddleware.Append(app.requireNoXAuthJWT).ThenFunc(app.signupFinish))
