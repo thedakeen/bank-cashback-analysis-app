@@ -15,7 +15,7 @@ type UserModel struct {
 	C *mongo.Collection
 }
 
-func NewUserModel(usersCollection, itemsCollection *mongo.Collection) *UserModel {
+func NewUserModel(usersCollection *mongo.Collection) *UserModel {
 	return &UserModel{
 		C: usersCollection,
 	}
@@ -45,7 +45,7 @@ func (m *UserModel) CheckEmail(email string) error {
 	}
 	return nil
 }
-func (m *UserModel) SignUpComplete(email, name, password string) error {
+func (m *UserModel) SignUpComplete(email, name, surname, phone, address, password string) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		return err
@@ -56,7 +56,11 @@ func (m *UserModel) SignUpComplete(email, name, password string) error {
 	update := bson.M{
 		"$set": bson.M{
 			"name":           name,
+			"surname":        surname,
+			"phone":          phone,
+			"address":        address,
 			"hashedPassword": hashedPassword,
+			"role":           "user",
 			"created":        time.Now(),
 		},
 	}
@@ -70,25 +74,25 @@ func (m *UserModel) SignUpComplete(email, name, password string) error {
 	return nil
 }
 
-func (m *UserModel) Authenticate(email, password string) (string, error) {
+func (m *UserModel) Authenticate(email, password string) (string, string, error) {
 
 	var result models.User
 	err := m.C.FindOne(context.TODO(), bson.M{"email": email}).Decode(&result)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return "", models.ErrInvalidCredentials
+			return "", "", models.ErrInvalidCredentials
 		} else {
-			return "", err
+			return "", "", err
 		}
 	}
 
 	err = bcrypt.CompareHashAndPassword(result.HashedPassword, []byte(password))
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return "", models.ErrInvalidCredentials
+			return "", "", models.ErrInvalidCredentials
 		}
-		return "", err
+		return "", "", err
 	}
 
-	return result.ID.Hex(), nil
+	return result.ID.Hex(), "", nil
 }
