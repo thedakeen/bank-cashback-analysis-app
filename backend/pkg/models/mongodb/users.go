@@ -12,14 +12,12 @@ import (
 )
 
 type UserModel struct {
-	C               *mongo.Collection
-	ItemsCollection *mongo.Collection
+	C *mongo.Collection
 }
 
 func NewUserModel(usersCollection, itemsCollection *mongo.Collection) *UserModel {
 	return &UserModel{
-		C:               usersCollection,
-		ItemsCollection: itemsCollection,
+		C: usersCollection,
 	}
 }
 
@@ -60,7 +58,6 @@ func (m *UserModel) SignUpComplete(email, name, password string) error {
 			"name":           name,
 			"hashedPassword": hashedPassword,
 			"created":        time.Now(),
-			"role":           "buyer",
 		},
 	}
 	opts := options.Update().SetUpsert(true)
