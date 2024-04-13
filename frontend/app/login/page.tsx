@@ -13,6 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Page } from "@/components/ui/page";
 import { VStack } from "@/components/ui/vstack";
+import api from "@/lib/api";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -23,7 +25,7 @@ const formSchema = z.object({
         .string()
         .email("Not a valid email")
         .min(6, { message: "Minimum length of email is 6" })
-        .max(24, { message: "Maximum length of email is 24" }),
+        .max(32, { message: "Maximum length of email is 32" }),
     password: z
         .string()
         .min(6, { message: "Minimum password length is 6" })
@@ -39,16 +41,20 @@ function LoginPage() {
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
-    }
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        const res = await api.post("/v1/login", {
+            Email: values.email,
+            Password: values.password,
+        });
+        console.log(values, res);
+    };
 
     return (
         <Page>
             <Container>
                 <VStack
                     // align="center"
-                    className="absolute bg-primary p-12 rounded-2xl w-4/12"
+                    className="absolute bg-primary p-12 rounded-2xl w-6/12"
                     style={{
                         top: "50%",
                         left: "50%",
