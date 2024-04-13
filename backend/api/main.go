@@ -21,7 +21,7 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":7777", "HTTP networks address")
-	mongoURI := flag.String("mongoURI", "mongodb+srv://ansaramanzholov2005:323431@cluster1.wdbaku4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1", "MongoDB URI")
+	mongoURI := flag.String("mongoURI", "mongodb+srv://user:<password>@cluster1.wdbaku4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1", "MongoDB URI")
 
 	flag.Parse()
 
