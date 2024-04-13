@@ -43,7 +43,7 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
-	db := client.Database("Qazaq-Aliexpress")
+	db := client.Database("BCAapp")
 
 	app := &application{
 		infoLog:  infoLog,
