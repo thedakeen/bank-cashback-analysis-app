@@ -19,7 +19,6 @@ type application struct {
 	users    *mongoDB.UserModel
 	otps     *mongoDB.OtpModel
 	promos   *mongoDB.PromoModel
-
 }
 
 func main() {
@@ -65,21 +64,23 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	app.promos.DropCollection()
-	app.kaspiParser()
+
 	go func() {
 		c := cron.New()
+
+		app.promos.DropCollection()
+		insertHalyk(app.promos)
+		app.kaspiParser()
 
 		c.AddFunc("0 0 * * *", func() {
 			app.promos.DropCollection()
 			app.kaspiParser()
+			insertHalyk(app.promos)
 		})
 		c.Start()
 
 		select {}
 	}()
-
-	insertHalyk(app.promosHalyk)
 
 	infoLog.Printf("Starting server on %s", *addr)
 	err = srv.ListenAndServe()

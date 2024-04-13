@@ -20,8 +20,9 @@ func (app *application) routes() http.Handler {
 	standardMiddleware := alice.New(c.Handler)
 	dynamicMiddleware := alice.New()
 
-
 	mux := pat.New()
+
+	mux.Get("/api/v1/cashbacks", dynamicMiddleware.Append(app.authenticate).ThenFunc(app.getAllCashBacks))
 
 	mux.Post("/api/v1/signup/email", dynamicMiddleware.Append(app.requireNoXAuthJWT).ThenFunc(app.signupEmail))
 	mux.Post("/api/v1/signup/code", dynamicMiddleware.Append(app.requireNoXAuthJWT).ThenFunc(app.signupCode))

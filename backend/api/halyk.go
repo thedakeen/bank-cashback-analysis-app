@@ -25,7 +25,7 @@ func insertHalyk(promoModel *mongodb.PromoModel) {
 			continue
 		}
 
-		fmt.Printf("Categories for city %s:\n", cityCode)
+		//fmt.Printf("Categories for city %s:\n", cityCode)
 		for _, cat := range categories {
 			//fmt.Println("Category:", cat.Code, "- Count:", cat.Count)
 			if cat.Count == 0 {
@@ -47,11 +47,11 @@ func insertHalyk(promoModel *mongodb.PromoModel) {
 				}
 
 				promotion := models.Promotion{
-					Bank:         "Halyk Bank",
+					BankName:     "Halyk Bank",
 					CompanyName:  shop.CompanyName,
 					CategoryName: shop.CategoryName,
 					Type:         "Company",
-					Bonus:        bonus,
+					BonusRate:    bonus,
 				}
 
 				err = promoModel.SavePromotionToDB(promotion)
@@ -94,7 +94,7 @@ func GetShopByCategory(cityCode, categoryName string) ([]models.Shop, error) {
 
 	req.Header.Set("City_id", cityCode)
 	req.Header.Set("Accept-Language", "ru")
-	req.Header.Set("Authorization", "Bearer NHS-XXHTNAUQ59HWKIQTBA")
+	req.Header.Set("Authorization", "Bearer _XRM9CVQN0-O0P8JB6DBKA")
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -134,7 +134,7 @@ func GetCategoriesByCity(cityCode string) ([]models.Category, error) {
 
 	req.Header.Set("City_id", cityCode)
 	req.Header.Set("Accept-Language", "ru")
-	req.Header.Set("Authorization", "Bearer NHS-XXHTNAUQ59HWKIQTBA")
+	req.Header.Set("Authorization", "Bearer _XRM9CVQN0-O0P8JB6DBKA")
 
 	res, err := client.Do(req)
 
@@ -168,7 +168,7 @@ func GetAllCityCodes() ([]string, error) {
 	}
 
 	req.Header.Set("Accept-Language", "ru")
-	req.Header.Set("Authorization", "Bearer NHS-XXHTNAUQ59HWKIQTBA")
+	req.Header.Set("Authorization", "Bearer _XRM9CVQN0-O0P8JB6DBKA")
 
 	res, err := client.Do(req)
 

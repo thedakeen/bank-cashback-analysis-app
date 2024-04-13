@@ -63,3 +63,21 @@ func (m *PromoModel) GetAllPromos() ([]*models.Promotion, error) {
 
 	return promos, nil
 }
+
+/////////////////////////// HALYK /////////////////////////
+
+func (m *PromoModel) SaveShopToDB(shop models.Shop) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := m.C.InsertOne(ctx, shop)
+	return err
+}
+
+func (m *PromoModel) SavePromotionToDB(promotion models.Promotion) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := m.C.InsertOne(ctx, promotion)
+	return err
+}
