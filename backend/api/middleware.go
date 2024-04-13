@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (app *application) requireNoXAuthJWT(next httprouter.Handle) http.Handler {
+func (app *application) requireNoXAuthJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := r.Header.Get("X-Auth")
 		claims := &AppClaims{}
@@ -22,7 +22,7 @@ func (app *application) requireNoXAuthJWT(next httprouter.Handle) http.Handler {
 				return
 			}
 		}
-		next(w, r, nil)
+		next.ServeHTTP(w, r)
 	})
 }
 
@@ -54,4 +54,12 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 
+}
+
+func MiddleCORS(next httprouter.Handle) httprouter.Handle {
+	return func(w http.ResponseWriter,
+		r *http.Request, ps httprouter.Params) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		next(w, r, ps)
+	}
 }

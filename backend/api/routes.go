@@ -1,24 +1,33 @@
 package main
 
 import (
-	"github.com/julienschmidt/httprouter"
+	"github.com/bmizerany/pat"
+	"github.com/justinas/alice"
+	"github.com/rs/cors"
 	"net/http"
 )
 
-func (app *application) routes() *httprouter.Router {
-	router := httprouter.New()
+func (app *application) routes() http.Handler {
 
-	router.NotFound = http.HandlerFunc(app.notFoundResponse)
-	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:7777", "http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type", "X-Auth"},
+		AllowCredentials: true,
+		Debug:            true,
+	})
 
-	app.authenticate(router)
+	standardMiddleware := alice.New(c.Handler)
+	dynamicMiddleware := alice.New()
 
-	router.HandlerFunc(http.MethodGet, "/v1/cashbacks", app.authenticate(app.GetAllCashBacks))
-	router.HandlerFunc(http.MethodPost, "/v1/signup/email", app.signupEmail)
-	router.HandlerFunc(http.MethodPost, "/v1/signup/code", app.signupCode)
-	router.HandlerFunc(http.MethodPost, "/v1/signup", app.signupFinish)
 
-	router.HandlerFunc(http.MethodPost, "/v1/login", app.login)
+	mux := pat.New()
 
-	return router
+	mux.Post("/api/v1/signup/email", dynamicMiddleware.Append(app.requireNoXAuthJWT).ThenFunc(app.signupEmail))
+	mux.Post("/api/v1/signup/code", dynamicMiddleware.Append(app.requireNoXAuthJWT).ThenFunc(app.signupCode))
+	mux.Post("/api/v1/signup", dynamicMiddleware.Append(app.requireNoXAuthJWT).ThenFunc(app.signupFinish))
+
+	mux.Post("/api/v1/login", dynamicMiddleware.Append(app.requireNoXAuthJWT).ThenFunc(app.login))
+
+	return standardMiddleware.Then(mux)
 }
