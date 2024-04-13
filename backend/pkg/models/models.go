@@ -20,6 +20,7 @@ type User struct {
 	Created        time.Time          `bson:"created"`
 	Phone          string             `bson:"phone"`
 	Address        string             `bson:"address"`
+	Role           string             `bson:"role"`
 	OTP            OTP                `bson:"otp,omitempty"`
 }
 

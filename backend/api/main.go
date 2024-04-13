@@ -49,7 +49,7 @@ func main() {
 		infoLog:  infoLog,
 		errorLog: errorLog,
 		otps:     mongoDB.NewOtpModel(db.Collection("otps")),
-		users:    mongoDB.NewUserModel(db.Collection("users"), db.Collection("items")),
+		users:    mongoDB.NewUserModel(db.Collection("users")),
 	}
 
 	srv := &http.Server{
