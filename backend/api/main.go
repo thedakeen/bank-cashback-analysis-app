@@ -17,6 +17,7 @@ type application struct {
 	errorLog *log.Logger
 	users    *mongoDB.UserModel
 	otps     *mongoDB.OtpModel
+	promos   *mongoDB.PromoModel
 }
 
 func main() {
@@ -50,6 +51,7 @@ func main() {
 		errorLog: errorLog,
 		otps:     mongoDB.NewOtpModel(db.Collection("otps")),
 		users:    mongoDB.NewUserModel(db.Collection("users")),
+		promos:   mongoDB.NewPromoModel(db.Collection("promos")),
 	}
 
 	srv := &http.Server{
@@ -61,6 +63,8 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
+
+	app.kaspiParser()
 
 	infoLog.Printf("Starting server on %s", *addr)
 	err = srv.ListenAndServe()
