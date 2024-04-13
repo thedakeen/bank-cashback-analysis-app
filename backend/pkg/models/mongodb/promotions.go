@@ -1,9 +1,11 @@
 package mongodb
 
 import (
+	"bank-cashback-analysis/backend/pkg/models"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
@@ -32,4 +34,32 @@ func (m *PromoModel) AddKaspi(title, source_url, bank_name, promo_type, category
 		return err
 	}
 	return nil
+}
+
+func (m *PromoModel) DropCollection() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err := m.C.Drop(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *PromoModel) GetAllPromos() ([]*models.Promotion, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	cursor, err := m.C.Find(ctx, bson.M{}, options.Find())
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var promos []*models.Promotion
+	if err = cursor.All(ctx, &promos); err != nil {
+		return nil, err
+	}
+
+	return promos, nil
 }

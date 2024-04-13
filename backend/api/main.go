@@ -4,6 +4,7 @@ import (
 	mongoDB "bank-cashback-analysis/backend/pkg/models/mongodb"
 	"context"
 	"flag"
+	"github.com/robfig/cron"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -63,8 +64,19 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-
+	app.promos.DropCollection()
 	app.kaspiParser()
+	go func() {
+		c := cron.New()
+
+		c.AddFunc("0 0 * * *", func() {
+			app.promos.DropCollection()
+			app.kaspiParser()
+		})
+		c.Start()
+
+		select {}
+	}()
 
 	infoLog.Printf("Starting server on %s", *addr)
 	err = srv.ListenAndServe()
