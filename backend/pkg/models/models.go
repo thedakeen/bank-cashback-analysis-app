@@ -35,12 +35,10 @@ type OTP struct {
 	Expires time.Time `bson:"expires"`
 }
 
-type Cards struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	Number   string             `bson:"number"`
-	CardType string             `bson:"card_type"`
-	BankName string             `bson:"bank_name"`
-}
+
+
+
+////////////////////////////////////
 
 type Promotion struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
@@ -58,3 +56,31 @@ type Promotion struct {
 	Type         string             `bson:"promo_type"`
 	CardType     string             `bson:"card_type"`
 }
+
+type Category struct {
+	Code  string `json:"code"`
+	Count int64  `json:"count"`
+}
+
+type ShopResponse struct {
+	Shops []Shop `json:"data"`
+}
+
+type Shop struct {
+	CompanyName  string `json:"name"`
+	CategoryName string `json:"category_name"`
+	Tags         []Tag  `json:"tags"`
+}
+
+type Tag struct {
+	Bonus string `json:"text"`
+}
+
+type Cards struct {
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	Number   string             `bson:"number"`
+	CardType string             `bson:"card_type"`
+	BankName string             `bson:"bank_name"`
+}
+
+

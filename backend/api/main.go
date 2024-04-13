@@ -19,6 +19,7 @@ type application struct {
 	users    *mongoDB.UserModel
 	otps     *mongoDB.OtpModel
 	promos   *mongoDB.PromoModel
+
 }
 
 func main() {
@@ -77,6 +78,8 @@ func main() {
 
 		select {}
 	}()
+
+	insertHalyk(app.promosHalyk)
 
 	infoLog.Printf("Starting server on %s", *addr)
 	err = srv.ListenAndServe()

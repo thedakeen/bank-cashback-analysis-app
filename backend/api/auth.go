@@ -184,10 +184,9 @@ func (app *application) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"email": req.Email}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"token": jwt}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
-	json.NewEncoder(w).Encode(map[string]string{"Token": jwt})
 }
