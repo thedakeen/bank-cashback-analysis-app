@@ -12,7 +12,7 @@ import (
 	"strconv"
 )
 
-func insertHalyk(promoModel *mongodb.PromoModel) {
+func (app *application) insertHalyk(promoModel *mongodb.PromoModel) {
 	cityCodes, err := GetAllCityCodes()
 	if err != nil {
 		log.Fatal(err)

@@ -69,13 +69,13 @@ func main() {
 		c := cron.New()
 
 		app.promos.DropCollection()
-		insertHalyk(app.promos)
 		app.kaspiParser()
+		app.insertHalyk(app.promos)
 
 		c.AddFunc("0 0 * * *", func() {
 			app.promos.DropCollection()
 			app.kaspiParser()
-			insertHalyk(app.promos)
+			app.insertHalyk(app.promos)
 		})
 		c.Start()
 

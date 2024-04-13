@@ -47,8 +47,6 @@ type Promotion struct {
 	BonusRate    float64            `bson:"bonus_rate"`
 	Requirements string             `bson:"requirements,omitempty"`
 	Restrictions string             `bson:"restrictions,omitempty"`
-	Expires      time.Time          `bson:"expires-at,omitempty"`
-	Start        time.Time          `bson:"start-at,omitempty"`
 	Location     string             `bson:"location,omitempty"`
 	Type         string             `bson:"promo_type"`
 	CardType     string             `bson:"card_type,omitempty"`
@@ -73,7 +71,7 @@ type Tag struct {
 	Bonus string `json:"text"`
 }
 
-type Cards struct {
+type Card struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty"`
 	Number   string             `bson:"number"`
 	CardType string             `bson:"card_type"`

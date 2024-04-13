@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 )
 
@@ -11,11 +10,10 @@ func (app *application) getAllCashBacks(w http.ResponseWriter, r *http.Request) 
 		app.serverError(w, err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 
-	err = json.NewEncoder(w).Encode(p)
+	err = app.writeJSON(w, http.StatusOK, envelope{"promos": p}, nil)
 	if err != nil {
-		app.serverError(w, err)
+		app.serverErrorResponse(w, r, err)
 		return
 	}
 }
