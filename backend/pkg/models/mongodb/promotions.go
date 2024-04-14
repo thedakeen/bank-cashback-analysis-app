@@ -46,22 +46,33 @@ func (m *PromoModel) DropCollection() error {
 	return nil
 }
 
-func (m *PromoModel) GetAllPromos() ([]*models.Promotion, error) {
+func (m *PromoModel) GetAllPromos(filters Filters) ([]*models.Promotion, Metadata, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cursor, err := m.C.Find(ctx, bson.M{}, options.Find())
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(filters.PageSize))
+	findOptions.SetSkip(int64(filters.Page-1) * int64(filters.PageSize))
+
+	cursor, err := m.C.Find(ctx, bson.M{}, findOptions)
 	if err != nil {
-		return nil, err
+		return nil, Metadata{}, err
 	}
 	defer cursor.Close(ctx)
 
 	var promos []*models.Promotion
 	if err = cursor.All(ctx, &promos); err != nil {
-		return nil, err
+		return nil, Metadata{}, err
 	}
 
-	return promos, nil
+	totalRecords, err := m.C.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return nil, Metadata{}, err
+	}
+
+	metadata := calculateMetadata(int(totalRecords), filters.Page, filters.PageSize)
+
+	return promos, metadata, nil
 }
 
 /////////////////////////// HALYK /////////////////////////
