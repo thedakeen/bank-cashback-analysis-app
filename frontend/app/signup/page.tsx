@@ -143,7 +143,7 @@ const SignupPage: React.FC<SignupPageProps> = ({}) => {
         <Page>
             <Container>
                 <VStack
-                    className="absolute bg-primary p-12 rounded-2xl w-6/12"
+                    className="absolute bg-primary p-12 rounded-2xl w-10/12"
                     style={{
                         top: "50%",
                         left: "50%",

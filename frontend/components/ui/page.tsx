@@ -3,7 +3,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
 import React from "react";
 
-const pageVariants = cva("bg-accent h-svh", {
+const pageVariants = cva("bg-accent min-h-svh", {
     variants: {},
     defaultVariants: {},
 });

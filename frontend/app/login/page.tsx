@@ -14,9 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Page } from "@/components/ui/page";
 import { VStack } from "@/components/ui/vstack";
 import api from "@/lib/api";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -33,6 +33,7 @@ const formSchema = z.object({
 });
 
 function LoginPage() {
+    const router = useRouter();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -46,7 +47,8 @@ function LoginPage() {
             Email: values.email,
             Password: values.password,
         });
-        console.log(values, res);
+        localStorage.setItem("token", res.data.token);
+        router.replace("/cashbacks");
     };
 
     return (
@@ -54,7 +56,7 @@ function LoginPage() {
             <Container>
                 <VStack
                     // align="center"
-                    className="absolute bg-primary p-12 rounded-2xl w-6/12"
+                    className="absolute bg-primary p-12 rounded-2xl w-10/12"
                     style={{
                         top: "50%",
                         left: "50%",
