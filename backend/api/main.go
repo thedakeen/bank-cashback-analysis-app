@@ -4,6 +4,8 @@ import (
 	mongoDB "bank-cashback-analysis/backend/pkg/models/mongodb"
 	"context"
 	"flag"
+	"github.com/joho/godotenv"
+	"github.com/robfig/cron"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -17,11 +19,18 @@ type application struct {
 	errorLog *log.Logger
 	users    *mongoDB.UserModel
 	otps     *mongoDB.OtpModel
+	promos   *mongoDB.PromoModel
+	cards    *mongoDB.CardModel
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Print("No .env file found")
+	}
+
 	addr := flag.String("addr", ":7777", "HTTP networks address")
-	mongoURI := flag.String("mongoURI", "mongodb+srv://ansaramanzholov2005:323431@cluster1.wdbaku4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1", "MongoDB URI")
+	mongoURI := flag.String("mongoURI", os.Getenv("DB_DSN"), "MongoDB URI")
 
 	flag.Parse()
 
@@ -43,13 +52,15 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
-	db := client.Database("Qazaq-Aliexpress")
+	db := client.Database("BCAapp")
 
 	app := &application{
 		infoLog:  infoLog,
 		errorLog: errorLog,
 		otps:     mongoDB.NewOtpModel(db.Collection("otps")),
-		users:    mongoDB.NewUserModel(db.Collection("users"), db.Collection("items")),
+		users:    mongoDB.NewUserModel(db.Collection("users"), db.Collection("cards")),
+		promos:   mongoDB.NewPromoModel(db.Collection("promos")),
+		cards:    mongoDB.NewCardModel(db.Collection("cards")),
 	}
 
 	srv := &http.Server{
@@ -61,6 +72,23 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
+
+	go func() {
+		c := cron.New()
+
+		app.promos.DropCollection()
+		app.kaspiParser()
+		app.insertHalyk(app.promos)
+
+		c.AddFunc("0 0 * * *", func() {
+			app.promos.DropCollection()
+			app.kaspiParser()
+			app.insertHalyk(app.promos)
+		})
+		c.Start()
+
+		select {}
+	}()
 
 	infoLog.Printf("Starting server on %s", *addr)
 	err = srv.ListenAndServe()
