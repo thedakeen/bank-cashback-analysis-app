@@ -31,7 +31,7 @@ func (app *application) addCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = app.cards.SetCard(userOBJId, req.CardNumber, req.CardType, req.BankName)
+	err = app.users.SetCard(userOBJId, req.CardNumber, req.CardType, req.BankName)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

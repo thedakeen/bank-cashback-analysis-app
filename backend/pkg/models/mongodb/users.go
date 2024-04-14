@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
@@ -12,12 +13,14 @@ import (
 )
 
 type UserModel struct {
-	C *mongo.Collection
+	C               *mongo.Collection
+	CardsCollection *mongo.Collection
 }
 
-func NewUserModel(usersCollection *mongo.Collection) *UserModel {
+func NewUserModel(usersCollection, cardsCollection *mongo.Collection) *UserModel {
 	return &UserModel{
-		C: usersCollection,
+		C:               usersCollection,
+		CardsCollection: cardsCollection,
 	}
 }
 
@@ -95,4 +98,30 @@ func (m *UserModel) Authenticate(email, password string) (string, string, error)
 	}
 
 	return result.ID.Hex(), "", nil
+}
+
+func (m *UserModel) SetCard(userId primitive.ObjectID, card_number, card_type, bank_name string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cardInsert := bson.M{
+		"card_number": card_number,
+		"card_type":   card_type,
+		"bank_name":   bank_name,
+		"user_id":     userId,
+	}
+
+	_, err := m.CardsCollection.InsertOne(ctx, cardInsert)
+
+	filter := bson.M{"_id": userId}
+	update := bson.M{
+		"$push": bson.M{"cards": cardInsert},
+	}
+
+	_, err = m.C.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

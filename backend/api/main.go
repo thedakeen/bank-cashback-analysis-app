@@ -58,7 +58,7 @@ func main() {
 		infoLog:  infoLog,
 		errorLog: errorLog,
 		otps:     mongoDB.NewOtpModel(db.Collection("otps")),
-		users:    mongoDB.NewUserModel(db.Collection("users")),
+		users:    mongoDB.NewUserModel(db.Collection("users"), db.Collection("cards")),
 		promos:   mongoDB.NewPromoModel(db.Collection("promos")),
 		cards:    mongoDB.NewCardModel(db.Collection("cards")),
 	}
