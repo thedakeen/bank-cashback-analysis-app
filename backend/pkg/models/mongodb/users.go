@@ -100,6 +100,8 @@ func (m *UserModel) Authenticate(email, password string) (string, string, error)
 	return result.ID.Hex(), "", nil
 }
 
+///////////////////////////////////////////////////////
+
 func (m *UserModel) SetCard(userId primitive.ObjectID, card_number, card_type, bank_name string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -124,4 +126,31 @@ func (m *UserModel) SetCard(userId primitive.ObjectID, card_number, card_type, b
 	}
 
 	return nil
+}
+
+func (m *UserModel) GetUserInfo(userId primitive.ObjectID) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var user models.User
+	filter := bson.M{"_id": userId}
+
+	projection := bson.M{
+		"email":   1,
+		"name":    1,
+		"surname": 1,
+		"address": 1,
+		"phone":   1,
+		"cards":   1,
+	}
+
+	err := m.C.FindOne(ctx, filter, options.FindOne().SetProjection(projection)).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, models.ErrNoRecord
+		}
+		return nil, err
+	}
+
+	return &user, nil
 }

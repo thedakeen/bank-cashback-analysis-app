@@ -22,7 +22,7 @@ type User struct {
 	Address        string             `bson:"address"`
 	Role           string             `bson:"role"`
 	OTP            OTP                `bson:"otp,omitempty"`
-	Cards          []Card             `bson:"card,omitempty"`
+	Cards          []Card             `bson:"cards,omitempty"`
 }
 
 type OTPs struct {

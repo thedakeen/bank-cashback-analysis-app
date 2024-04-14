@@ -42,3 +42,25 @@ func (app *application) addCard(w http.ResponseWriter, r *http.Request) {
 		app.serverErrorResponse(w, r, err)
 	}
 }
+
+func (app *application) showUserInfo(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value("userID").(string)
+
+	userOBJId, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	u, err := app.users.GetUserInfo(userOBJId)
+
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"user": u}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
