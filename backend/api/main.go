@@ -4,6 +4,7 @@ import (
 	mongoDB "bank-cashback-analysis/backend/pkg/models/mongodb"
 	"context"
 	"flag"
+	"github.com/joho/godotenv"
 	"github.com/robfig/cron"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -23,8 +24,13 @@ type application struct {
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Print("No .env file found")
+	}
+
 	addr := flag.String("addr", ":7777", "HTTP networks address")
-	mongoURI := flag.String("mongoURI", "mongodb+srv://user:<password>@cluster1.wdbaku4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1", "MongoDB URI")
+	mongoURI := flag.String("mongoURI", os.Getenv("DB_DSN"), "MongoDB URI")
 
 	flag.Parse()
 

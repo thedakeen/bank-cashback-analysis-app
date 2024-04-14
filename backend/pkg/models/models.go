@@ -22,6 +22,7 @@ type User struct {
 	Address        string             `bson:"address"`
 	Role           string             `bson:"role"`
 	OTP            OTP                `bson:"otp,omitempty"`
+	Cards          []Card             `bson:"card,omitempty"`
 }
 
 type OTPs struct {
@@ -63,6 +64,7 @@ type ShopResponse struct {
 
 type Shop struct {
 	CompanyName  string `json:"name"`
+	CompanyCode  string `json:"id"`
 	CategoryName string `json:"category_name"`
 	Tags         []Tag  `json:"tags"`
 }

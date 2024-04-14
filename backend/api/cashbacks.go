@@ -7,7 +7,7 @@ import (
 func (app *application) getAllCashBacks(w http.ResponseWriter, r *http.Request) {
 	p, err := app.promos.GetAllPromos()
 	if err != nil {
-		app.serverError(w, err)
+		app.serverErrorResponse(w, r, err)
 		return
 	}
 
