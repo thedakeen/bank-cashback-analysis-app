@@ -3,6 +3,7 @@ package mongodb
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 )
@@ -17,7 +18,7 @@ func NewCardModel(cardCollection *mongo.Collection) *CardModel {
 	}
 }
 
-func (m *CardModel) SetCard(card_number, card_type, bank_name string) error {
+func (m *CardModel) SetCard(userId primitive.ObjectID, card_number, card_type, bank_name string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -25,9 +26,10 @@ func (m *CardModel) SetCard(card_number, card_type, bank_name string) error {
 		"card_number": card_number,
 		"card_type":   card_type,
 		"bank_name":   bank_name,
+		"user_id":     userId,
 	}
 
-	_, err := m.C.InsertOne(ctx, insert)
+	_, err := m.C.UpdateOne(ctx, bson.M{"_id": userId}, bson.M{"$push": bson.M{"cards": insert}})
 	if err != nil {
 		return err
 	}

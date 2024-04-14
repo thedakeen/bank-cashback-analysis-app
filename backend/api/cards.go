@@ -1,8 +1,18 @@
 package main
 
-import "net/http"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"net/http"
+)
 
 func (app *application) addCard(w http.ResponseWriter, r *http.Request) {
+	userId, ok := r.Context().Value("userID").(string)
+
+	if !ok {
+		app.unauthorizedResponse(w, r)
+		return
+	}
+
 	var req struct {
 		CardNumber string `json:"card_number"`
 		CardType   string `json:"card_type"`
@@ -15,7 +25,13 @@ func (app *application) addCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = app.cards.SetCard(req.CardNumber, req.CardType, req.BankName)
+	userOBJId, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.cards.SetCard(userOBJId, req.CardNumber, req.CardType, req.BankName)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
