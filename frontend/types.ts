@@ -1,8 +1,13 @@
 import { z } from "zod";
 
-const CashbacksType = z.enum(["Company", "Promo", "Location", "Category"]);
+export const CashbacksType = z.enum([
+    "Company",
+    "Promo",
+    "Location",
+    "Category",
+]);
 
-const Cashback = z.object({
+export const Cashback = z.object({
     ID: z.string(),
     Title: z.string().optional(),
     SourceUrl: z.string().optional(),
@@ -17,5 +22,15 @@ const Cashback = z.object({
     CardType: z.string(),
 });
 
+export const UserBankCard = z.object({
+    CardNumber: z
+        .string()
+        .length(16)
+        .regex(/^[0-9]+$/),
+    CardType: z.string(),
+    BankName: z.string(),
+});
+
 export type Cashback = z.infer<typeof Cashback>;
 export type CashbacksType = z.infer<typeof CashbacksType>;
+export type UserBankCard = z.infer<typeof UserBankCard>;

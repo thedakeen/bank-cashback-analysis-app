@@ -14,9 +14,11 @@ import { Input } from "@/components/ui/input";
 import { Page } from "@/components/ui/page";
 import { VStack } from "@/components/ui/vstack";
 import api from "@/lib/api";
+import { useAuth } from "@/lib/queries/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -34,6 +36,7 @@ const formSchema = z.object({
 
 function LoginPage() {
     const router = useRouter();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -42,14 +45,21 @@ function LoginPage() {
         },
     });
 
+    const { isSuccess, isLoading } = useAuth(
+        form.formState.isSubmitted,
+        form.getValues("email"),
+        form.getValues("password")
+    );
+
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        const res = await api.post("/v1/login", {
-            Email: values.email,
-            Password: values.password,
-        });
-        localStorage.setItem("token", res.data.token);
-        router.replace("/cashbacks");
+        // refetch();
     };
+
+    useEffect(() => {
+        if (isSuccess) {
+            router.replace("/cashbacks");
+        }
+    }, [isSuccess]);
 
     return (
         <Page>
@@ -71,6 +81,7 @@ function LoginPage() {
                             <FormField
                                 control={form.control}
                                 name="email"
+                                disabled={isSuccess || isLoading}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
@@ -86,6 +97,7 @@ function LoginPage() {
                             />
                             <FormField
                                 control={form.control}
+                                disabled={isSuccess || isLoading}
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
@@ -103,6 +115,7 @@ function LoginPage() {
                                 )}
                             />
                             <Button
+                                disabled={isLoading || isSuccess}
                                 type="submit"
                                 className="bg-secondary w-full"
                             >
